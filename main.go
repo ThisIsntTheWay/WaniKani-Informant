@@ -17,6 +17,7 @@ import (
 type Configuration struct {
 	ApiToken   string `json:"wkApiToken"`
 	WebhookURL string `json:"discordUrl"`
+	LastReview string `json:"lastReview"`
 }
 
 type GraduationInfo struct {
@@ -54,6 +55,7 @@ func main() {
 		text = strings.TrimSuffix(text, "\r\n")
 		cfg.WebhookURL = text
 
+		cfg.LastReview = "2000-01-01T22:00:00.000000Z"
 		file, _ := json.MarshalIndent(cfg, "", " ")
 		_ = ioutil.WriteFile("configuration.json", file, 0644)
 	} else {
@@ -140,6 +142,7 @@ func main() {
 	// Only POST if current time is equal to available at
 	layout := "2006-01-02T15:04:05.000000Z"
 	reviewTime, err := time.Parse(layout, gradObject.AvailableTime)
+	reviewTimeLast, _ := time.Parse(layout, cfg.LastReview)
 	nowTime := time.Now()
 
 	if err != nil {
@@ -147,8 +150,21 @@ func main() {
 		fmt.Println(err)
 	} else {
 		if nowTime.After(reviewTime) {
-			fmt.Println(color.Colorize(color.Yellow, "Attempting POST to discord..."))
-			postToDiscord(cfg.WebhookURL, gradObject)
+			// Check if review was posted already
+			if reviewTime.Equal(reviewTimeLast) {
+				fmt.Println(color.Colorize(color.Yellow, "Review already POSTed to Discord."))
+			} else {
+				fmt.Println(reviewTime)
+				fmt.Println(color.Colorize(color.Yellow, "Attempting POST to Discord..."))
+				r := postToDiscord(cfg.WebhookURL, gradObject)
+
+				// Update time
+				if r {
+					cfg.LastReview = gradObject.AvailableTime
+					file, _ := json.MarshalIndent(cfg, "", " ")
+					_ = ioutil.WriteFile("configuration.json", file, 0644)
+				}
+			}
 		}
 	}
 

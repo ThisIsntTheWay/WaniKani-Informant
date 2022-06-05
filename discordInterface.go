@@ -30,11 +30,11 @@ type WebhookMessage struct {
 /* -----------
 	FUNCTIONS
    ----------- */
-func postToDiscord(url string, gradObj GraduationInfo) {
+func postToDiscord(url string, gradObj GraduationInfo) bool {
 	// Sanity check
 	if gradObj.Counter == 0 {
 		fmt.Println(color.Colorize(color.Red, "No items to graduate, will not POST."))
-		return
+		return false
 	}
 
 	gradTemplate, _ := ioutil.ReadFile("json/msgGraduationTemplate.json")
@@ -115,8 +115,9 @@ func postToDiscord(url string, gradObj GraduationInfo) {
 		fmt.Println(color.Colorize(color.Gray, "URL: "+url))
 		fmt.Println("> Status Code:", resp.StatusCode())
 		fmt.Println("> Response   :", resp)
+		return false
 	} else {
 		fmt.Println(color.Colorize(color.Green, "Successfully POSTed to Discord."))
-		fmt.Println(resp)
+		return true
 	}
 }
