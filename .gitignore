@@ -1,4 +1,4 @@
-configuration.json
+conf*.json
 *.sum
 *.ps1
 *.exe
