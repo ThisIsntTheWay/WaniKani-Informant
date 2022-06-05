@@ -105,10 +105,6 @@ func postToDiscord(url string, gradObj GraduationInfo) {
 		}
 	}
 
-	fmt.Println(color.Colorize(color.Red, "2 ----------------"))
-	fmt.Println(obj)
-	fmt.Println(color.Colorize(color.Red, "= ----------------"))
-
 	client := resty.New()
 	resp, _ := client.R().
 		SetBody(obj).
