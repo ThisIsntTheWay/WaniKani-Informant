@@ -1,3 +1,4 @@
 configuration.json
 *.sum
 *.ps1
+*.exe
