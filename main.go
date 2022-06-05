@@ -15,9 +15,10 @@ import (
 )
 
 type Configuration struct {
-	ApiToken   string `json:"wkApiToken"`
-	WebhookURL string `json:"discordUrl"`
-	LastReview string `json:"lastReview"`
+	ApiToken    string `json:"wkApiToken"`
+	WebhookURL  string `json:"discordUrl"`
+	LastReview  string `json:"lastReview"`
+	PostOnError bool   `json:"postOnError"`
 }
 
 type GraduationInfo struct {
@@ -56,6 +57,8 @@ func main() {
 		cfg.WebhookURL = text
 
 		cfg.LastReview = "2000-01-01T22:00:00.000000Z"
+		cfg.PostOnError = true
+
 		file, _ := json.MarshalIndent(cfg, "", " ")
 		_ = ioutil.WriteFile("configuration.json", file, 0644)
 	} else {

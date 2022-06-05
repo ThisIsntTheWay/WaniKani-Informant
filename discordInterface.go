@@ -123,6 +123,16 @@ func postToDiscord(url string, gradObj GraduationInfo) bool {
 }
 
 func postErrorToDiscord(errHeader string, errMsg string) bool {
+	// Get config
+	var cfg Configuration
+
+	file, _ := ioutil.ReadFile("configuration.json")
+	_ = json.Unmarshal([]byte(file), &cfg)
+
+	if !cfg.PostOnError {
+		return false
+	}
+
 	// Read template
 	errMsgTemplate, _ := ioutil.ReadFile("json/msgErrorTemplate.json")
 
@@ -134,12 +144,6 @@ func postErrorToDiscord(errHeader string, errMsg string) bool {
 		obj.Embeds[0].Description, "!errMsgContent!", errMsg, -1)
 	obj.Embeds[0].Title = strings.Replace(
 		obj.Embeds[0].Title, "!errMsgheader!", errHeader, -1)
-
-	// Get config
-	var cfg Configuration
-
-	file, _ := ioutil.ReadFile("configuration.json")
-	_ = json.Unmarshal([]byte(file), &cfg)
 
 	// POST
 	client := resty.New()
