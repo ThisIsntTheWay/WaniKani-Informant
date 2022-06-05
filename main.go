@@ -8,10 +8,10 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/TwiN/go-color"
+	"github.com/google/uuid"
 )
 
 type Configuration struct {
@@ -39,21 +39,32 @@ func main() {
 	// Create config file
 	if _, err := os.Stat("configuration.json"); errors.Is(err, os.ErrNotExist) {
 		// Read from console
-		reader := bufio.NewReader(os.Stdin)
+		reader := bufio.NewScanner(os.Stdin)
 		fmt.Println(color.Colorize(color.Yellow, "[!] Configuration is missing."))
 
+		text := ""
 		fmt.Println("Please enter your WaniKani V2 API token.")
-		fmt.Print("> ")
-		text, _ := reader.ReadString('\n')
-		text = strings.Replace(text, "\n", "", -1)
-		text = strings.TrimSuffix(text, "\r\n")
+		for {
+			fmt.Print(color.Colorize(color.Cyan, "> "))
+			reader.Scan()
+			text = reader.Text()
+
+			// Validate input
+			if !IsValidUUID(text) {
+				fmt.Println(text)
+				fmt.Println(color.Colorize(color.Red, "[!] Input is not a valid UUID, please retry."))
+			} else {
+				break
+			}
+		}
+
 		cfg.ApiToken = text
 
 		fmt.Println("Please enter your Discord Webhook URL.")
-		fmt.Print("> ")
-		text, _ = reader.ReadString('\n')
-		text = strings.Replace(text, "\n", "", -1)
-		text = strings.TrimSuffix(text, "\r\n")
+		fmt.Print(color.Colorize(color.Cyan, "> "))
+		reader.Scan()
+		text = reader.Text()
+
 		cfg.WebhookURL = text
 
 		cfg.LastReview = "2000-01-01T22:00:00.000000Z"
@@ -181,4 +192,9 @@ func main() {
 	}
 
 	fmt.Println()
+}
+
+func IsValidUUID(u string) bool {
+	_, err := uuid.Parse(u)
+	return err == nil
 }
