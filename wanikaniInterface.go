@@ -61,7 +61,11 @@ func getReviews(apiToken string) Summary {
 		fmt.Println("Status Code:", resp.StatusCode())
 		fmt.Println("Error      :", err)
 
-		postErrorToDiscord("Unable to access review summary", ("Error: " + string(resp.Body())))
+		e := postErrorToDiscord("Unable to access review summary", ("Error: " + string(resp.Body())))
+		if e {
+			fmt.Println(color.Colorize(color.Yellow, "[i] Error posted to Discord."))
+		}
+
 		return Summary{}
 	} else {
 		var obj Summary
@@ -82,7 +86,11 @@ func getAssignments(apiToken string) Assignment {
 		fmt.Println("Status Code:", resp.StatusCode())
 		fmt.Println("Error      :", err)
 
-		postErrorToDiscord("Unable to access assignments", ("Error: " + string(resp.Body())))
+		e := postErrorToDiscord("Unable to access assignments", ("Error: " + string(resp.Body())))
+		if e {
+			fmt.Println(color.Colorize(color.Yellow, "[i] Error posted to Discord."))
+		}
+
 		return Assignment{}
 	} else {
 		var obj Assignment
