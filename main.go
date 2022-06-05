@@ -65,7 +65,14 @@ func main() {
 
 	// See what can graduate
 	assignments := getAssignments(cfg.ApiToken)
+	if assignments.DataUpdatedAt == "" {
+		os.Exit(1)
+	}
+
 	reviews := getReviews(cfg.ApiToken)
+	if reviews.DataUpdatedAt == "" {
+		os.Exit(1)
+	}
 
 	fmt.Println(color.Colorize(color.Blue, "------------------"))
 
