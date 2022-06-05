@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/TwiN/go-color"
 )
@@ -125,6 +126,8 @@ func main() {
 				graduatingReviewTotalItems = i + 1
 				gradObject.AvailableTime = e.AvailableAt
 			}
+
+			fmt.Println()
 		}
 
 		// Abort if the first review has graduating items
@@ -134,6 +137,20 @@ func main() {
 		}
 	}
 
-	fmt.Println(gradObject)
-	postToDiscord(cfg.WebhookURL, gradObject)
+	// Only POST if current time is equal to available at
+	layout := "2006-01-02T15:04:05.000000Z"
+	reviewTime, err := time.Parse(layout, gradObject.AvailableTime)
+	nowTime := time.Now()
+
+	if err != nil {
+		fmt.Println(color.Colorize(color.Red, "[!] Could not parse AvailableAt time:"))
+		fmt.Println(err)
+	} else {
+		if nowTime.After(reviewTime) {
+			fmt.Println(color.Colorize(color.Yellow, "Attempting POST to discord..."))
+			postToDiscord(cfg.WebhookURL, gradObject)
+		}
+	}
+
+	fmt.Println()
 }
