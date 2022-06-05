@@ -1,0 +1,23 @@
+{
+  "content": "A [review](https://www.wanikani.com/review/session) with graduating items has come up at **!reviewTime!**!\n*The review has a total of !revTotal! items.*",
+  "embeds": [
+    {
+      "title": "Radicals",
+      "description": "**To graduate:** !radGrad!",
+      "color": 41457
+    },
+    {
+      "title": "Kanji",
+      "description": "**To graduate:** !kanGrad!",
+      "color": 15794337
+    },
+    {
+      "title": "Vocab",
+      "description": "**To graduate:** !vocGrad!",
+      "color": 11010301
+    }
+  ],
+  "username": "WaniKani informant",
+  "avatar_url": "https://docs.api.wanikani.com/images/logo-wanikani.png",
+  "attachments": []
+}
