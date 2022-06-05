@@ -11,3 +11,9 @@ The following external modules are used:
    - Colored console output
  - github.com/go-resty/resty/v2
    - REST client
+
+### Preview
+The message will show color-coded information for each item category with a graduation chance:
+![image](https://user-images.githubusercontent.com/13659371/172054625-85259e01-3de2-4c2b-af6e-78d0b8d1c1ed.png)
+
+The webhooks message can be customized in `json/msgGraduationTemplate.json`.
