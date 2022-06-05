@@ -1,0 +1,13 @@
+{
+  "content": "An error has occurred:",
+  "embeds": [
+    {
+      "title": "!errMsgheader!",
+      "description": "`!errMsgContent!`",
+      "color": 16711680
+    }
+  ],
+  "username": "WaniKani Informant",
+  "avatar_url": "https://docs.api.wanikani.com/images/logo-wanikani.png",
+  "attachments": []
+}

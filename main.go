@@ -155,6 +155,8 @@ func main() {
 	if err != nil {
 		fmt.Println(color.Colorize(color.Red, "[!] Could not parse AvailableAt time:"))
 		fmt.Println(err)
+
+		postErrorToDiscord("Unable to determine AvailableAt time of review.", err.Error())
 	} else {
 		if nowTime.After(reviewTime) {
 			// Check if review was posted already

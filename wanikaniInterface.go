@@ -60,15 +60,12 @@ func getReviews(apiToken string) Summary {
 		fmt.Println(color.Colorize(color.Red, "[!] Error accessing review summary."))
 		fmt.Println("Status Code:", resp.StatusCode())
 		fmt.Println("Error      :", err)
+
+		postErrorToDiscord("Unable to access review summary", ("Error: " + string(resp.Body())))
 		return Summary{}
 	} else {
 		var obj Summary
-
 		json.Unmarshal(resp.Body(), &obj)
-		/*
-			fmt.Println("DataUpdatedAt     :", obj.DataUpdatedAt)
-			fmt.Println("NextReviewsAt     :", obj.SummaryData.Reviews)
-		*/
 
 		return obj
 	}
@@ -84,20 +81,12 @@ func getAssignments(apiToken string) Assignment {
 		fmt.Println(color.Colorize(color.Red, "[!] Error accessing assignments."))
 		fmt.Println("Status Code:", resp.StatusCode())
 		fmt.Println("Error      :", err)
+
+		postErrorToDiscord("Unable to access assignments", ("Error: " + string(resp.Body())))
 		return Assignment{}
 	} else {
 		var obj Assignment
 		json.Unmarshal(resp.Body(), &obj)
-		/*
-			fmt.Printf("obj is: %v\n", obj)
-			fmt.Println("  Status Code:", resp.StatusCode())
-			fmt.Println("  Header:", resp.Header())
-
-			fmt.Println("TCount            :", obj.TotalCount)
-			fmt.Println("DataUpdatedAt     :", obj.DataUpdatedAt)
-			fmt.Println("Data1             :", obj.Data[0].Id)
-			fmt.Println("Data2             :", obj.Data[1].Id)
-		*/
 
 		return obj
 	}

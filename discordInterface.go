@@ -121,3 +121,39 @@ func postToDiscord(url string, gradObj GraduationInfo) bool {
 		return true
 	}
 }
+
+func postErrorToDiscord(errHeader string, errMsg string) bool {
+	// Read template
+	errMsgTemplate, _ := ioutil.ReadFile("json/msgErrorTemplate.json")
+
+	var obj WebhookMessage
+	json.Unmarshal(errMsgTemplate, &obj)
+
+	// Adjust template
+	obj.Embeds[0].Description = strings.Replace(
+		obj.Embeds[0].Description, "!errMsgContent!", errMsg, -1)
+	obj.Embeds[0].Title = strings.Replace(
+		obj.Embeds[0].Title, "!errMsgheader!", errHeader, -1)
+
+	// Get config
+	var cfg Configuration
+
+	file, _ := ioutil.ReadFile("configuration.json")
+	_ = json.Unmarshal([]byte(file), &cfg)
+
+	// POST
+	client := resty.New()
+	resp, _ := client.R().
+		SetBody(obj).
+		Post(cfg.WebhookURL)
+
+	if resp.IsError() {
+		fmt.Println(color.Colorize(color.Red, "[!] Could not POST error to discord."))
+		fmt.Println(color.Colorize(color.Gray, "URL: "+cfg.WebhookURL))
+		fmt.Println("> Status Code:", resp.StatusCode())
+		fmt.Println("> Response   :", resp)
+		return false
+	} else {
+		return true
+	}
+}
