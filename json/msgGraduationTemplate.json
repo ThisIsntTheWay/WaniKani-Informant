@@ -1,5 +1,5 @@
 {
-  "content": "A [review](https://www.wanikani.com/review/session) with graduating items has come up at **!reviewTime!**!\n*The review has a total of !revTotal! items.*",
+  "content": "A [review](https://www.wanikani.com/review/session) with graduating items has become available!\n*The review has a total of !revTotal! items.*",
   "embeds": [
     {
       "title": "Radicals",
