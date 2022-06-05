@@ -18,6 +18,15 @@ type Configuration struct {
 	WebhookURL string `json:"discordUrl"`
 }
 
+type GraduationInfo struct {
+	Counter       int
+	RadGrads      int
+	KanGrads      int
+	VocGrads      int
+	TotItems      int
+	AvailableTime string
+}
+
 func main() {
 	cfg := Configuration{
 		ApiToken:   "",
@@ -57,6 +66,12 @@ func main() {
 
 	fmt.Println(color.Colorize(color.Blue, "------------------"))
 
+	var gradObject GraduationInfo
+	gradObject.Counter = 0
+	gradObject.RadGrads = 0
+	gradObject.KanGrads = 0
+	gradObject.VocGrads = 0
+
 	for index, e := range reviews.SummaryData.Reviews {
 		// Skip empty reviews
 		if len(e.SubjectIds) == 0 {
@@ -66,21 +81,59 @@ func main() {
 			fmt.Println("", e.AvailableAt)
 		}
 
-		// ToDo: Detect SRS stages for subject IDs
-		for _, referenceSubjectId := range e.SubjectIds {
-			for _, assignmentCollectionElement := range assignments.Data {
-				//fmt.Println(color.Colorize(color.Red, "------------"))
+		haveFoundGraduatingReview := false
+		graduatingReviewTotalItems := 0
 
-				e := assignmentCollectionElement.Data
-				if e.SubId == referenceSubjectId {
+		for i, referenceSubjectId := range e.SubjectIds {
+			fmt.Print(i)
+
+			for _, assignmentCollectionElement := range assignments.Data {
+				d := assignmentCollectionElement.Data
+				if d.SubId == referenceSubjectId {
 					// Items with SRS stage 4, meaning Apprentice 4, can succeed to Guru 1 -> Meaning "passed"
-					if e.SrsStage == 4 {
-						fmt.Print(color.Colorize(color.Green, "--> "))
-						fmt.Println(e.SubId, "can graduate.")
+					if d.SrsStage == 4 {
+						fmt.Print(color.Colorize(color.Green, " --> "))
+						fmt.Println(d.SubId, "can graduate, is SubType", d.SubType)
+
+						haveFoundGraduatingReview = true
+
+						gradObject.Counter++
+						switch d.SubType {
+						case "radical":
+							gradObject.RadGrads++
+							break
+						case "kanji":
+							gradObject.KanGrads++
+							break
+						case "vocabulary":
+							gradObject.VocGrads++
+							break
+						default:
+							fmt.Println(color.Colorize(color.Red, " -> Subtype unknown"))
+						}
+					} else {
+						fmt.Print(color.Colorize(color.Red, " --> "))
+						fmt.Println(d.SubId, "cannot graduate, is SubType", d.SubType)
 					}
 				}
-				//fmt.Println()
+			}
+
+			// Reset total items counter if this is not a graduating review
+			if !haveFoundGraduatingReview && (i == (len(e.SubjectIds) - 1)) {
+				graduatingReviewTotalItems = 0
+			} else {
+				graduatingReviewTotalItems = i + 1
+				gradObject.AvailableTime = e.AvailableAt
 			}
 		}
+
+		// Abort if the first review has graduating items
+		if haveFoundGraduatingReview {
+			gradObject.TotItems = graduatingReviewTotalItems
+			break
+		}
 	}
+
+	fmt.Println(gradObject)
+	postToDiscord(cfg.WebhookURL, gradObject)
 }
