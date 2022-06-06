@@ -40,53 +40,42 @@ func PostToDiscord(url string, gradObj structs.GraduationInfo) bool {
 		obj.Content, "!reviewTime!", gradObj.AvailableTime, -1)
 
 	// The wierd for loops are required as indexes could move when being modified
-	f := "Radicals"
-	if gradObj.RadGrads == 0 {
-		for i, e := range obj.Embeds {
-			if e.Title == f {
-				obj.Embeds = append(obj.Embeds[:i], obj.Embeds[i+1:]...)
-			}
-		}
-	} else {
-		for i, e := range obj.Embeds {
-			if e.Title == f {
-				obj.Embeds[i].Description = strings.Replace(
-					obj.Embeds[i].Description, "!radGrad!", strconv.Itoa(gradObj.RadGrads),
-					-1)
-			}
-		}
-	}
+	// List applicable to webhooks embed titles
+	for index, filterElement := range [...]string{"Radicals", "Kanji", "Vocab"} {
+		x := 0
+		s := ""
 
-	f = "Kanji"
-	if gradObj.KanGrads == 0 {
-		for i, e := range obj.Embeds {
-			if e.Title == f {
-				obj.Embeds = append(obj.Embeds[:i], obj.Embeds[i+1:]...)
-			}
+		// Adjust cases if filterList changes!
+		switch index {
+		case 0:
+			x = gradObj.RadGrads
+			s = "!radGrad!"
+			break
+		case 1:
+			x = gradObj.KanGrads
+			s = "!kanGrad!"
+			break
+		case 2:
+			x = gradObj.VocGrads
+			s = "!vocGrad!"
+			break
 		}
-	} else {
-		for i, e := range obj.Embeds {
-			if e.Title == f {
-				obj.Embeds[i].Description = strings.Replace(
-					obj.Embeds[i].Description, "!kanGrad!", strconv.Itoa(gradObj.KanGrads),
-					-1)
-			}
-		}
-	}
 
-	f = "Vocab"
-	if gradObj.VocGrads == 0 {
-		for i, e := range obj.Embeds {
-			if e.Title == f {
-				obj.Embeds = append(obj.Embeds[:i], obj.Embeds[i+1:]...)
+		// Remove slice if it doesn't contain any elements to graduate
+		// Otherwise, adjust template
+		if x == 0 {
+			for i, e := range obj.Embeds {
+				if e.Title == filterElement {
+					obj.Embeds = append(obj.Embeds[:i], obj.Embeds[i+1:]...)
+				}
 			}
-		}
-	} else {
-		for i, e := range obj.Embeds {
-			if e.Title == f {
-				obj.Embeds[i].Description = strings.Replace(
-					obj.Embeds[i].Description, "!vocGrad!", strconv.Itoa(gradObj.VocGrads),
-					-1)
+		} else {
+			for i, e := range obj.Embeds {
+				if e.Title == filterElement {
+					obj.Embeds[i].Description = strings.Replace(
+						obj.Embeds[i].Description, s, strconv.Itoa(x),
+						-1)
+				}
 			}
 		}
 	}
