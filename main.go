@@ -10,28 +10,27 @@ import (
 	"strconv"
 	"time"
 
+	"ThisIsntTheWay/wk-informant/app/discordInterface"
+	"ThisIsntTheWay/wk-informant/app/structs"
+	"ThisIsntTheWay/wk-informant/app/wanikaniInterface"
+
 	"github.com/TwiN/go-color"
 	"github.com/google/uuid"
 )
 
-type Configuration struct {
-	ApiToken    string `json:"wkApiToken"`
-	WebhookURL  string `json:"discordUrl"`
-	LastReview  string `json:"lastReview"`
-	PostOnError bool   `json:"postOnError"`
+/* -----------
+	AUX FUNCTIONS
+   ----------- */
+func IsValidUUID(u string) bool {
+	_, err := uuid.Parse(u)
+	return err == nil
 }
 
-type GraduationInfo struct {
-	Counter       int
-	RadGrads      int
-	KanGrads      int
-	VocGrads      int
-	TotItems      int
-	AvailableTime string
-}
-
+/* -----------
+	ENTRY
+   ----------- */
 func main() {
-	cfg := Configuration{
+	cfg := structs.Configuration{
 		ApiToken:   "",
 		WebhookURL: "",
 	}
@@ -78,19 +77,19 @@ func main() {
 	}
 
 	// See what can graduate
-	assignments := getAssignments(cfg.ApiToken)
+	assignments := wanikaniInterface.GetAssignments(cfg.ApiToken)
 	if assignments.DataUpdatedAt == "" {
 		os.Exit(1)
 	}
 
-	reviews := getReviews(cfg.ApiToken)
+	reviews := wanikaniInterface.GetReviews(cfg.ApiToken)
 	if reviews.DataUpdatedAt == "" {
 		os.Exit(1)
 	}
 
 	fmt.Println(color.Colorize(color.Blue, "------------------"))
 
-	var gradObject GraduationInfo
+	var gradObject structs.GraduationInfo
 	gradObject.Counter = 0
 	gradObject.RadGrads = 0
 	gradObject.KanGrads = 0
@@ -193,7 +192,7 @@ func main() {
 		fmt.Println(color.Colorize(color.Red, "[!] Could not parse AvailableAt time:"))
 		fmt.Println(err)
 
-		postErrorToDiscord("Unable to determine AvailableAt time of review.", err.Error())
+		discordInterface.PostErrorToDiscord("Unable to determine AvailableAt time of review.", err.Error())
 	} else {
 		if nowTime.After(reviewTime) {
 			// Check if review was posted already
@@ -202,7 +201,7 @@ func main() {
 			} else {
 				fmt.Println(reviewTime)
 				fmt.Println(color.Colorize(color.Yellow, "Attempting POST to Discord..."))
-				r := postToDiscord(cfg.WebhookURL, gradObject)
+				r := discordInterface.PostToDiscord(cfg.WebhookURL, gradObject)
 
 				// Update time
 				if r {
@@ -218,9 +217,4 @@ func main() {
 	}
 
 	fmt.Println()
-}
-
-func IsValidUUID(u string) bool {
-	_, err := uuid.Parse(u)
-	return err == nil
 }

@@ -1,4 +1,4 @@
-package main
+package discordInterface
 
 import (
 	"encoding/json"
@@ -7,30 +7,16 @@ import (
 	"strconv"
 	"strings"
 
+	"ThisIsntTheWay/wk-informant/app/structs"
+
 	"github.com/TwiN/go-color"
 	"github.com/go-resty/resty/v2"
 )
 
 /* -----------
-	STRUCTS
-   ----------- */
-type EmbedItem struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Color       int    `json:"color"`
-}
-type WebhookMessage struct {
-	Content     string      `json:"content"`
-	Username    string      `json:"username"`
-	AvatarUrl   string      `json:"avatar_url"`
-	Embeds      []EmbedItem `json:"embeds"`
-	Attachments []string
-}
-
-/* -----------
 	FUNCTIONS
    ----------- */
-func postToDiscord(url string, gradObj GraduationInfo) bool {
+func PostToDiscord(url string, gradObj structs.GraduationInfo) bool {
 	// Sanity check
 	if gradObj.Counter == 0 {
 		fmt.Println(color.Colorize(color.Red, "No items to graduate, will not POST."))
@@ -39,7 +25,7 @@ func postToDiscord(url string, gradObj GraduationInfo) bool {
 
 	gradTemplate, _ := ioutil.ReadFile("json/msgGraduationTemplate.json")
 
-	var obj WebhookMessage
+	var obj structs.WebhookMessage
 	json.Unmarshal(gradTemplate, &obj)
 
 	/*
@@ -122,9 +108,9 @@ func postToDiscord(url string, gradObj GraduationInfo) bool {
 	}
 }
 
-func postErrorToDiscord(errHeader string, errMsg string) bool {
+func PostErrorToDiscord(errHeader string, errMsg string) bool {
 	// Get config
-	var cfg Configuration
+	var cfg structs.Configuration
 
 	file, _ := ioutil.ReadFile("configuration.json")
 	_ = json.Unmarshal([]byte(file), &cfg)
@@ -136,7 +122,7 @@ func postErrorToDiscord(errHeader string, errMsg string) bool {
 	// Read template
 	errMsgTemplate, _ := ioutil.ReadFile("json/msgErrorTemplate.json")
 
-	var obj WebhookMessage
+	var obj structs.WebhookMessage
 	json.Unmarshal(errMsgTemplate, &obj)
 
 	// Adjust template
