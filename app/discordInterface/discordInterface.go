@@ -45,7 +45,6 @@ func PostToDiscord(url string, gradObj structs.GraduationInfo) bool {
 		x := 0
 		s := ""
 
-		// Adjust cases if filterList changes!
 		switch index {
 		case 0:
 			x = gradObj.RadGrads
