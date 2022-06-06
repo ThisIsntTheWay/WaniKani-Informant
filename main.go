@@ -117,10 +117,29 @@ func main() {
 				if d.SubId == referenceSubjectId {
 					fmt.Print(i)
 
-					// Items with SRS stage 4, meaning Apprentice 4, can succeed to Guru 1 -> Meaning "passed"
-					if d.SrsStage == 4 {
+					var colorizedOutput = ""
+
+					switch d.SubType {
+					case "radical":
+						colorizedOutput = color.Colorize(color.Cyan, d.SubType)
+						break
+					case "kanji": // There is no pink, so we'll settle with yellow
+						colorizedOutput = color.Colorize(color.Yellow, d.SubType)
+						break
+					case "vocabulary":
+						colorizedOutput = color.Colorize(color.Purple, d.SubType)
+						break
+					case "default":
+						colorizedOutput = color.Colorize(color.Bold, d.SubType)
+						break
+					}
+
+					//if (d.SrsStage >= 1) && (d.SrsStage < 5) { // Critical items filter
+					if d.SrsStage == 4 { // Before graduation
 						fmt.Print(color.Colorize(color.Green, " --> "))
-						fmt.Println(d.SubId, "can graduate, is SubType", d.SubType)
+						fmt.Println(d.SubId, "can "+color.Ize(color.Green, "graduate")+", is SubType",
+							colorizedOutput,
+							"and stage", color.Colorize(color.Cyan, strconv.Itoa(d.SrsStage)))
 
 						haveFoundGraduatingReview = true
 
@@ -140,7 +159,9 @@ func main() {
 						}
 					} else {
 						fmt.Print(color.Colorize(color.Red, " --> "))
-						fmt.Println(d.SubId, "cannot graduate, is SubType", d.SubType)
+						fmt.Println(d.SubId, "cannot graduate, is SubType",
+							colorizedOutput,
+							"and stage", color.Colorize(color.Cyan, strconv.Itoa(d.SrsStage)))
 					}
 				}
 			}
