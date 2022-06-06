@@ -98,6 +98,9 @@ func main() {
 
 	for index, e := range reviews.SummaryData.Reviews {
 		// Skip empty reviews
+		/*fmt.Print(strconv.Itoa(index)+color.Colorize(color.Blue, " [i] Subject ID length: "), len(e.SubjectIds))
+		fmt.Println()*/
+
 		if len(e.SubjectIds) == 0 {
 			continue
 		} else {
@@ -109,11 +112,11 @@ func main() {
 		graduatingReviewTotalItems := 0
 
 		for i, referenceSubjectId := range e.SubjectIds {
-			fmt.Print(i)
-
 			for _, assignmentCollectionElement := range assignments.Data {
 				d := assignmentCollectionElement.Data
 				if d.SubId == referenceSubjectId {
+					fmt.Print(i)
+
 					// Items with SRS stage 4, meaning Apprentice 4, can succeed to Guru 1 -> Meaning "passed"
 					if d.SrsStage == 4 {
 						fmt.Print(color.Colorize(color.Green, " --> "))
@@ -149,8 +152,6 @@ func main() {
 				graduatingReviewTotalItems = i + 1
 				gradObject.AvailableTime = e.AvailableAt
 			}
-
-			fmt.Println()
 		}
 
 		// Abort if the first review has graduating items
@@ -166,6 +167,7 @@ func main() {
 	reviewTimeLast, _ := time.Parse(layout, cfg.LastReview)
 	nowTime := time.Now()
 
+	fmt.Println()
 	if err != nil {
 		fmt.Println(color.Colorize(color.Red, "[!] Could not parse AvailableAt time:"))
 		fmt.Println(err)
@@ -188,6 +190,9 @@ func main() {
 					_ = ioutil.WriteFile("configuration.json", file, 0644)
 				}
 			}
+		} else {
+			fmt.Println(color.Colorize(color.Yellow, "[i] NowTime not after ReviewTime:"), reviewTime)
+			fmt.Println(color.Colorize(color.Yellow, "Will not do anything..."))
 		}
 	}
 
