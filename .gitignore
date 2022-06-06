@@ -1,4 +1,11 @@
+# Various
 conf*.json
 *.sum
+
+# Scripts
 *.ps1
+*.sh
+
+# Executables
 *.exe
+wk-informant*
