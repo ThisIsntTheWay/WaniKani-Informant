@@ -20,6 +20,14 @@ type GraduationInfo struct {
 }
 
 /* -----------
+	Cache
+   ----------- */
+type Cache struct {
+	GradObjects  []int  `json:"GradObjects"`
+	LastReviewId string `json:"LastReviewId"`
+}
+
+/* -----------
 	WaniKani
    ----------- */
 // REVIEW STRUCTURE
